@@ -213,7 +213,7 @@ def min_group_size(context):
 
 @register.simple_tag(takes_context=True)
 def module_accessible(context, entry):
-    t = entry.get('opening_time')
+    t = entry.get('reading_opening_time', entry.get('opening_time'))
     if t and t > _prepare_now(context):
         return False
     if entry.get('requirements'):

@@ -194,13 +194,9 @@ class LearningObject(UrlMixin, ModelWithInheritance):
         return True
 
     def is_open(self, when=None):
-        if self.is_submittable():
-            return self.course_module.are_exercises_open(when=when)
         return self.course_module.is_open(when=when)
 
     def is_after_open(self, when=None):
-        if self.is_submittable():
-            return self.course_module.are_exercises_after_open(when=when)
         return self.course_module.is_after_open(when=when)
 
     def is_closed(self, when=None):

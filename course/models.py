@@ -737,10 +737,8 @@ class CourseModule(UrlMixin, models.Model):
         when = when or timezone.now()
         return self.reading_opening_time <= when
 
-    def are_submissions_open(self, when=None):
-        return self.opening_time <= when <= self.closing_time
-
-    def are_submissions_after_open(self, when=None):
+    def exercises_are_after_open(self, when=None):
+        when = when or timezone.now()
         return self.opening_time <= when
 
     def is_late_submission_open(self, when=None):
