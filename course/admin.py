@@ -65,7 +65,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
 class CourseModuleAdmin(admin.ModelAdmin):
     list_display_links = ("__str__",)
     list_display = ("course_instance", "__str__",
-        "opening_time", "closing_time", instance_url)
+        "reading_opening_time", "closing_time", instance_url)
     list_filter = ["course_instance", "opening_time", "closing_time"]
 
 

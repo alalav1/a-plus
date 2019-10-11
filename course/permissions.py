@@ -118,6 +118,34 @@ class CourseModulePermission(MessageMixin, Permission):
         return True
 
     def has_object_permission(self, request, view, module):
+
+        if module.status == CourseModule.STATUS.HIDDEN:
+            return False
+
+        if not module.is_after_open():
+            # FIXME: use format from django settings
+            self.error_msg(
+                _("The module will open for submissions at {date}."),
+                format={'date': module.opening_time},
+                delim=' ',
+            )
+            return False
+
+        if module.requirements.count() > 0:
+            points = CachedPoints(module.course_instance, request.user, view.content)
+            return module.are_requirements_passed(points)
+        return True
+
+
+class ExercisePermission(Permission):
+
+    def has_permission(self, request, view):
+        if not view.is_course_staff:
+            module = view.module
+            return self.has_object_permission(request, view, module)
+        return True
+
+    def has_object_permission(self, request, view, module):
         if not isinstance(module, CourseModule):
             return True
 
@@ -127,7 +155,7 @@ class CourseModulePermission(MessageMixin, Permission):
         if not module.is_after_open():
             # FIXME: use format from django settings
             self.error_msg(
-                _("The module will open for submissions at {date}."),
+                _("The exercise will open for submissions at {date}."),
                 format={'date': module.opening_time},
                 delim=' ',
             )

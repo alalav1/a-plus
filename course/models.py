@@ -685,6 +685,7 @@ class CourseModule(UrlMixin, models.Model):
     introduction = models.TextField(blank=True)
     course_instance = models.ForeignKey(CourseInstance, on_delete=models.CASCADE,
         related_name="course_modules")
+    reading_opening_time = models.DateTimeField(default=timezone.now, null=True, blank=True)
     opening_time = models.DateTimeField(default=timezone.now)
     closing_time = models.DateTimeField(default=timezone.now)
 
@@ -727,13 +728,19 @@ class CourseModule(UrlMixin, models.Model):
 
     def is_open(self, when=None):
         when = when or timezone.now()
-        return self.opening_time <= when <= self.closing_time
+        return self.reading_opening_time <= when <= self.closing_time
 
     def is_after_open(self, when=None):
         """
         Checks if current time is past the round opening time.
         """
         when = when or timezone.now()
+        return self.reading_opening_time <= when
+
+    def are_submissions_open(self, when=None):
+        return self.opening_time <= when <= self.closing_time
+
+    def are_submissions_after_open(self, when=None):
         return self.opening_time <= when
 
     def is_late_submission_open(self, when=None):
