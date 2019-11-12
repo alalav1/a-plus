@@ -12,14 +12,15 @@
 	<div class="row">
     <div class="col-sm-10">
 			<h4>{% trans "Course" %}</h4>
-    </div>
     <div class="col-sm">
 			<div class="dropdown h4">
-				<input type="image" src="{% static 'images/uls.svg' %}" alt="{% trans 'Language' %}"
-				class="btn btn-xs" id="lang-dropdown" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
-				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="lang-dropdown">
+				<button class="btn btn-primary dropdown-toggle" type="button" id="lang-dropdown"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				 Choose language
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="lang-dropdown">
 					{% for language in instance.language|list_unselected %}
-					<li>
+					<li class="dropdown-item">
 						<form action="{% url 'set_language' %}" method="post">
 							{% csrf_token %}
 							<input name="next" type="hidden" value="{{ request.get_full_path }}" />
@@ -30,6 +31,7 @@
 					{% endfor %}
 				</ul>
 			</div>
+    </div>
     </div>
   </div>
 </li>
