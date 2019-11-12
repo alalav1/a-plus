@@ -10,17 +10,20 @@
 {% if instance.language|first == "|" %}
 <li role="presentation" class="header">
 	<div class="row">
-    <div class="col-sm-10">
+    <div class="col-sm-8">
 			<h4>{% trans "Course" %}</h4>
+    </div>
     <div class="col-sm">
-			<div class="dropdown h4">
-				<button class="btn btn-primary dropdown-toggle" type="button" id="lang-dropdown"
+			<div class="dropdown">
+				{% get_current_language as LANGUAGE_CODE %}
+				<button class="btn btn-default dropdown-toggle" type="button" id="lang-dropdown"
 				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				 Choose language
+					<span style="display: inline-block; background-image: url({% static 'images/uls.svg' %}); width: 20px; height: 20px;"></span>
+					<span>{{ LANGUAGE_CODE }}</span>
 				</button>
-				<ul class="dropdown-menu" aria-labelledby="lang-dropdown">
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="lang-dropdown">
 					{% for language in instance.language|list_unselected %}
-					<li class="dropdown-item">
+					<li>
 						<form action="{% url 'set_language' %}" method="post">
 							{% csrf_token %}
 							<input name="next" type="hidden" value="{{ request.get_full_path }}" />
@@ -31,7 +34,6 @@
 					{% endfor %}
 				</ul>
 			</div>
-    </div>
     </div>
   </div>
 </li>
