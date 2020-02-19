@@ -21,7 +21,7 @@
 
 $(function() {
     "use strict";
- 
+
     // Mark active menu item
     $("[class^=menu-] a").each(function() {
         if ($(this)[0].pathname === location.pathname) {
@@ -498,30 +498,44 @@ $(function() {
         },
 
         searchOptions: function(show_dropdown) {
-            if (show_dropdown && this.result.is(":visible") === false) {
+            if (show_dropdown) {
                 this.search.find("button").dropdown("toggle");
                 return;
             }
-            this.result.find("li:not(.not-found)").remove();
-            this.result.find("li.not-found").hide();
             var selector = "option";
             const query = this.field.val().trim();
+            const self = this;
             if (query.length > 0) {
-                selector += ":contains(" + this.field.val() + ")";
+              $.ajax({
+                url: "http://localhost:8000/api/v2/users/", // Change this url
+                data: {
+                  "search": query
+                },
+              }).done( function( data ) {
+                var numOfEntries = data.count;
+                self.result.empty();
+                if(numOfEntries > 0) {
+                  console.log(numOfEntries + " rows");
+                  for (var i = 0; i < numOfEntries; i++) {
+                      var student_info = data.results[i];
+                      var li = $('<li></li>').click(function() {
+                        self.addSelection(student_info['student_id'], student_info['full_name'] + ", " + student_info['student_id']);
+                      });
+                      var text = $('<a></a>')
+                      text.append(document.createTextNode(student_info['full_name'] + ", " + student_info['student_id']))
+                      li.append(text)
+                      self.result.append(li)
+                    }
+                }
+                else {
+                  var li = $('<li></li>')
+                  var text = $('<a></a>')
+                  text.append(document.createTextNode(_("No matches!")))
+                  li.append(text)
+                  self.result.append(li)
             }
-            var opt = this.element.find(selector);
-            if (opt.size() === 0) {
-                this.result.find("li.not-found").show();
-            } else {
-                var self = this;
-                opt.slice(0, 20).each(function(index) {
-                    var li = $('<li><a data-value="' + $(this).attr("value") + '">' + $(this).text() + '</a></li>');
-                    li.find("a").on("click", function(event) {
-                        self.addSelection($(this).attr("data-value"), $(this).text());
-                    });
-                    self.result.append(li);
-                });
-            }
+            });
+          }
         },
 
         addSelection: function(value, name) {

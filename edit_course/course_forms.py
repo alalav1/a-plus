@@ -93,6 +93,7 @@ class CourseInstanceForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["assistants"].widget.attrs["class"] = "search-select"
         self.fields["assistants"].help_text = ""
+        self.fields["assistants"].queryset = UserProfile.objects.none()
         if self.instance and self.instance.visible_to_students:
             self.fields["url"].widget.attrs["readonly"] = "true"
             self.fields["url"].help_text = _("The URL identifier is locked "

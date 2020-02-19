@@ -1,4 +1,4 @@
-from rest_framework import permissions, viewsets
+from rest_framework import filters, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -20,7 +20,9 @@ class UserViewSet(ListSerializerMixin,
     ]
     filter_backends = (
         IsAdminOrUserObjIsSelf,
+        filters.SearchFilter,
     )
+    search_fields = ['user__first_name', 'user__last_name', 'student_id', 'user__email']
     lookup_field = 'user_id' # UserProfile.user.id
     lookup_url_kwarg = 'user_id'
     lookup_value_regex = REGEX_INT_ME
