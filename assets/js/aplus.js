@@ -498,7 +498,7 @@ $(function() {
         },
 
         searchOptions: function(show_dropdown) {
-            if (show_dropdown) {
+            if (show_dropdown  && this.result.is(":visible") === false) {
                 this.search.find("button").dropdown("toggle");
             }
             var selector = "option";
