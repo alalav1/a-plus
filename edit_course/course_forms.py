@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django_colortag.forms import ColorTagForm
@@ -7,6 +8,26 @@ from course.models import LearningObjectCategory, CourseModule, CourseInstance, 
 from lib.validators import generate_url_key_validator
 from userprofile.models import UserProfile
 
+
+class SelectManyField(forms.ModelMultipleChoiceField):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.widget.attrs["class"] = "search-select"
+
+    def clean(self, value):
+        if not isinstance(value, list):
+            raise ValidationError(
+                _("Invalid input type.")
+            )
+        for key in value:
+            if not User.objects.get(id=key):
+                raise ValidationError(
+                    _("{} is not a valid key.").format(key)
+                )
+        Users = User.objects.filter(id__in=value)
+        return UserProfile.objects.filter(user__in=Users)
 
 class FieldsetModelForm(forms.ModelForm):
 
@@ -68,6 +89,8 @@ class CourseModuleForm(FieldsetModelForm):
 
 class CourseInstanceForm(forms.ModelForm):
 
+    assistants = SelectManyField(queryset=UserProfile.objects.none())
+
     class Meta:
         model = CourseInstance
         fields = [
@@ -91,9 +114,8 @@ class CourseInstanceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["assistants"].widget.attrs["class"] = "search-select"
-        self.fields["assistants"].help_text = ""
-        self.fields["assistants"].queryset = UserProfile.objects.none()
+        #self.fields['assistants'].widget.attrs["class"] = "search-select"
+        self.fields['assistants'].queryset = self.instance.assistants
         if self.instance and self.instance.visible_to_students:
             self.fields["url"].widget.attrs["readonly"] = "true"
             self.fields["url"].help_text = _("The URL identifier is locked "

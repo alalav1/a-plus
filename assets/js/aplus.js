@@ -500,7 +500,6 @@ $(function() {
         searchOptions: function(show_dropdown) {
             if (show_dropdown) {
                 this.search.find("button").dropdown("toggle");
-                return;
             }
             var selector = "option";
             const query = this.field.val().trim();
@@ -515,11 +514,10 @@ $(function() {
                 var numOfEntries = data.count;
                 self.result.empty();
                 if(numOfEntries > 0) {
-                  console.log(numOfEntries + " rows");
-                  for (var i = 0; i < numOfEntries; i++) {
-                      var student_info = data.results[i];
+                  for (let i = 0; i < numOfEntries; i++) {
+                      const student_info = data.results[i];
                       var li = $('<li></li>').click(function() {
-                        self.addSelection(student_info['student_id'], student_info['full_name'] + ", " + student_info['student_id']);
+                        self.addSelection(student_info['id'], student_info['full_name'] + ", " + student_info['student_id']);
                       });
                       var text = $('<a></a>')
                       text.append(document.createTextNode(student_info['full_name'] + ", " + student_info['student_id']))
@@ -563,9 +561,14 @@ $(function() {
         finish: function() {
             this.widget.remove();
             var select = this.element.show();
+            select.empty()
             select.find("option:selected").prop("selected", false);
             this.selection.find("button").each(function(index) {
-                select.find('option[value="' + $(this).attr("data-value") + '"]').prop("selected", true);
+              jQuery('<option/>', {
+                  value: $(this).attr("data-value"),
+                  "selected": 'true',
+              }).appendTo(select);
+
             });
         }
     });
